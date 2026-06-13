@@ -1,0 +1,18 @@
+User Browser
+    │
+    ▼
+Flask (client/) :5000
+    ├── /login, /signup  →  PostgreSQL (users table)
+    ├── /chat            →  renders chat.html
+    │       │
+    │       │  JS fetch (internal)
+    │       ▼
+    │   FastAPI (backend/) :8000
+    │       ├── receives doc/prompt
+    │       ├── RAG pipeline
+    │       │     ├── embed → ChromaDB
+    │       │     ├── retrieve → ChromaDB
+    │       │     └── generate → LLM
+    │       └── returns FAQ Q&A pairs
+    │
+    └── /admin           →  PostgreSQL (users, history)

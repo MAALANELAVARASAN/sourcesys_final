@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}Chat - Tim FAQ{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+
+    <div class="input-panel">
+        <h3>Ask anything or upload docs — get FAQs instantly</h3>
+
+        <div class="input-group">
+            <input
+                type="text"
+                id="prompt-input"
+                placeholder="e.g. What is the refund policy? How does chapter 3 work?"
+            >
+        </div>
+
+        <div class="upload-area" id="upload-area">
+            <input type="file" id="file-input" accept=".pdf,.docx,.txt,.md" multiple hidden>
+            <p id="upload-label">📂 Click to attach documents (optional)</p>
+            <p class="upload-hint">PDF, DOCX, TXT supported · Max 5 files · 10MB each</p>
+        </div>
+
+        <!-- file list -->
+        <div id="file-list" class="file-list hidden"></div>
+
+        <button class="btn btn-primary" onclick="generate()">Generate FAQs</button>
+    </div>
+
+    <div class="loading hidden" id="loading">
+        <div class="spinner"></div>
+        <p>Generating FAQs...</p>
+    </div>
+
+    <div class="results hidden" id="results">
+        <div class="results-header">
+            <h3>Answer</h3>
+            <span class="source-badge" id="source-badge"></span>
+        </div>
+        <div class="faq-list" id="faq-list"></div>
+    </div>
+
+</div>
+
+<script>
+    const MAX_FILES = 5;
+    const MAX_SIZE_MB = 10;
+    let selectedFiles = [];
+
+    document.getElementById("upload-area").addEventListener("click", () => {
+        document.getElementById("file-input").click();
+    });
+
+    document.getElementById("file-input").addEventListener("change", (e) => {
+        const newFiles = Array.from(e.target.files);
+
+        for (const file of newFiles) {
+            if (selectedFiles.length >= MAX_FILES) {
+                alert("Maximum " + MAX_FILES + " files allowed.");
+                break;
+            }
+            const sizeMB = file.size / (1024 * 1024);
+            if (sizeMB > MAX_SIZE_MB) {
+                alert(file.name + " exceeds 10MB limit and was skipped.");
+                continue;
+            }
+            // avoid duplicates
+            const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+            if (!exists) {
+                selectedFiles.push(file);
+            }
+        }
+
+        renderFileList();
+        // reset input so same file can be re-added after removal
+        e.target.value = "";
+    });
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        renderFileList();
+    }
+
+    function renderFileList() {
+        const container = document.getElementById("file-list");
+        const label = document.getElementById("upload-label");
+
+        if (selectedFiles.length === 0) {
+            container.classList.add("hidden");
+            container.innerHTML = "";
+            label.textContent = "📂 Click to attach documents (optional)";
+            return;
+        }
+
+        label.textContent = "📂 Add more documents (" + selectedFiles.length + "/" + MAX_FILES + ")";
+        container.classList.remove("hidden");
+        container.innerHTML = selectedFiles.map((f, i) => `
+            <div class="file-tag">
+                <span>📄 ${f.name}</span>
+                <span class="file-size">${(f.size / 1024).toFixed(0)}KB</span>
+                <button class="file-remove" onclick="removeFile(${i})">✕</button>
+            </div>
+        `).join("");
+    }
+
+    async function generate() {
+        const prompt = document.getElementById("prompt-input").value.trim();
+        if (!prompt) {
+            alert("Please enter a prompt.");
+            return;
+        }
+
+        showLoading();
+
+        const formData = new FormData();
+        formData.append("prompt", prompt);
+        selectedFiles.forEach(file => formData.append("files", file));
+
+        try {
+            const response = await fetch("/chat/generate", {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            displayResults(data);
+        } catch (err) {
+            alert("Something went wrong. Try again.");
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function displayResults(data) {
+        const results = document.getElementById("results");
+        const faqList = document.getElementById("faq-list");
+        const badge   = document.getElementById("source-badge");
+
+        if (data.source === "knowledge_base") {
+            badge.textContent = "📚 From knowledge base";
+            badge.className   = "source-badge badge-document";
+        } else {
+            badge.textContent = "🤖 From Gemini AI";
+            badge.className   = "source-badge badge-ai";
+        }
+
+        let html = '<div class="direct-answer"><p>' + data.direct_answer + '</p></div>';
+        html += '<h4 class="faq-section-title">Related FAQs</h4>';
+
+        data.faq_pairs.forEach(function(pair, index) {
+            html += '<div class="faq-item">';
+            html += '<div class="faq-question"><span class="faq-num">Q' + (index + 1) + '</span>' + pair.question + '</div>';
+            html += '<div class="faq-answer">' + pair.answer + '</div>';
+            html += '</div>';
+        });
+
+        faqList.innerHTML = html;
+        results.classList.remove("hidden");
+        results.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function showLoading() {
+        document.getElementById("loading").classList.remove("hidden");
+        document.getElementById("results").classList.add("hidden");
+    }
+
+    function hideLoading() {
+        document.getElementById("loading").classList.add("hidden");
+    }
+</script>
+{% endblock %}
