@@ -14,7 +14,6 @@ def signup():
         email     = request.form.get("email")
         password  = request.form.get("password")
 
-        # check if user exists
         existing_user = User.query.filter(
             (User.username == username) | (User.email == email)
         ).first()
@@ -23,10 +22,8 @@ def signup():
             flash("Username or email already exists.", "error")
             return redirect(url_for("auth.signup"))
 
-        # hash password
         password_hash = hashpw(password.encode("utf-8"), gensalt()).decode("utf-8")
 
-        # create user
         new_user = User(
             username=username,
             email=email,

@@ -27,6 +27,7 @@ langchain-chroma = "^1.1.0"
 langchain-google-genai = "^4.2.4"
 langchain-groq = "^1.1.2"
 flask-dance = "^7.1.0"
+reportlab = "^4.5.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"

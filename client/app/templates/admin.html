@@ -4,21 +4,41 @@
 {% block content %}
 <div class="admin-container">
 
-    <!-- STATS -->
+    <!-- STATS GRID -->
     <div class="admin-stats">
         <div class="stat-card">
             <h3>{{ total_users }}</h3>
             <p>Total Users</p>
         </div>
         <div class="stat-card">
-            <h3>{{ user_count }}</h3>
-            <p>Regular Users</p>
+            <h3>{{ total_chats }}</h3>
+            <p>Total Chats</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_faqs }}</h3>
+            <p>FAQs Generated</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_docs }}</h3>
+            <p>Docs Uploaded</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_collections }}</h3>
+            <p>FAQ Sessions</p>
         </div>
         <div class="stat-card">
             <h3>{{ admin_count }}</h3>
             <p>Admins</p>
         </div>
     </div>
+
+    <!-- MOST ACTIVE -->
+    {% if most_active %}
+    <div class="admin-highlight">
+        🏆 Most active user: <strong>{{ most_active.username }}</strong>
+        with <strong>{{ most_active.chat_count }}</strong> chats
+    </div>
+    {% endif %}
 
     <!-- USERS TABLE -->
     <div class="admin-table-container">
@@ -50,16 +70,16 @@
                         {% if user.id != current_user.id %}
                             {% if user.role != "admin" %}
                             <form method="POST" action="{{ url_for('admin.promote_user', user_id=user.id) }}">
-                                <button type="submit" class="btn btn-small btn-secondary">
-                                    Promote
-                                </button>
+                                <button type="submit" class="btn btn-small btn-secondary">Promote</button>
+                            </form>
+                            {% else %}
+                            <form method="POST" action="{{ url_for('admin.demote_user', user_id=user.id) }}">
+                                <button type="submit" class="btn btn-small btn-secondary">Demote</button>
                             </form>
                             {% endif %}
-                            <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}">
-                                <button type="submit" class="btn btn-small btn-danger"
-                                    onclick="return confirm('Delete {{ user.username }}?')">
-                                    Delete
-                                </button>
+                            <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}"
+                                  onsubmit="return confirm('Delete {{ user.username }}?')">
+                                <button type="submit" class="btn btn-small btn-danger">Delete</button>
                             </form>
                         {% else %}
                             <span class="you-badge">You</span>

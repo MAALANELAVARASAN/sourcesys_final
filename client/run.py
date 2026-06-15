@@ -1,6 +1,6 @@
 from client.app import create_app
 import os
-
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # dev only!
 app = create_app()
 
 if __name__ == "__main__":

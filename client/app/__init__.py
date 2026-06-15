@@ -1,10 +1,13 @@
-from flask import Flask
-from flask_login import LoginManager
-from .models import db, User
+from flask import Flask, redirect, url_for
+from flask_login import LoginManager, current_user
+from .models import db, User, Chat, Message, FAQCollection, FAQPair, Document
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Allow HTTP for local dev (must be before any OAuth import)
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 login_manager = LoginManager()
 
@@ -25,6 +28,11 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
 
+    # ── Import THEN register Google OAuth blueprints ──
+    from client.app.routes.google_auth import google_bp, callback_bp
+    app.register_blueprint(google_bp, url_prefix="/login")
+    app.register_blueprint(callback_bp)
+
     from client.app.routes.auth import auth
     from client.app.routes.chat import chat
     from client.app.routes.admin import admin
@@ -35,6 +43,12 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
+    @app.route("/")
+    def root():
+        if current_user.is_authenticated:
+            return redirect(url_for("chat.index"))
+        return redirect(url_for("auth.login"))
 
     return app
 

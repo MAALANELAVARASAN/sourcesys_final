@@ -1,3 +1,5 @@
+import os
+from typing import Optional
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -13,9 +15,10 @@ class Settings(BaseSettings):
     # PostgreSQL
     DATABASE_URL: str
 
-    # OpenAI
+    # LLMs
     GEMINI_API_KEY: str
     GROQ_API_KEY: str
+    OPENROUTER_API_KEY: str = ""
 
     # Nomic
     NOMIC_API_KEY: str
@@ -23,8 +26,12 @@ class Settings(BaseSettings):
     # ChromaDB
     CHROMA_DB_PATH: str = "./chroma_db"
 
+    # Google OAuth
+    GOOGLE_CLIENT_ID: Optional[str] = None
+    GOOGLE_CLIENT_SECRET: Optional[str] = None
+
     class Config:
         env_file = ".env"
-        extra = "ignore"       
+        extra = "ignore"
 
 settings = Settings()
