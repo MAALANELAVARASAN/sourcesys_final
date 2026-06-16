@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.api.routes import faq, health
@@ -9,25 +10,24 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS - allows Flask frontend to talk to FastAPI
+# CORS - allow both local and deployed Flask frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5000"],  # Flask URL
+    allow_origins=["*"],  # tighten this to your Render URL after deployment
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
 )
 
-
 app.include_router(faq.router, prefix="/api/v1", tags=["FAQ"])
 app.include_router(health.router, prefix="/api/v1", tags=["Health"])
 
-
 if __name__ == "__main__":
     import uvicorn
+    port = int(os.getenv("PORT", settings.FASTAPI_PORT))
     uvicorn.run(
         "backend.main:app",
-        host=settings.FASTAPI_HOST,
-        port=settings.FASTAPI_PORT,
-        reload=True
+        host="0.0.0.0",
+        port=port,
+        reload=False
     )

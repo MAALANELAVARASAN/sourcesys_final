@@ -1,11 +1,13 @@
-﻿from flask import Blueprint, render_template, request, jsonify, redirect, url_for, make_response
+﻿import os
+
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, make_response
 from flask_login import login_required, current_user
 from client.app.models import db, Chat, Message, FAQCollection, FAQPair
 from datetime import datetime
 import requests
 
 chat = Blueprint("chat", __name__)
-FASTAPI_URL = "http://127.0.0.1:8000/api/v1"
+FASTAPI_URL = os.getenv("FASTAPI_URL", "http://127.0.0.1:8000/api/v1")
 
 
 @chat.route("/chat")
