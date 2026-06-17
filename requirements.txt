@@ -24,6 +24,7 @@ tenacity
 
 # ── CLIENT ────────────────────────────────────────────
 flask
+flask-dance
 flask-login
 flask-sqlalchemy
 bcrypt
