@@ -8,6 +8,7 @@ import requests
 
 chat = Blueprint("chat", __name__)
 FASTAPI_URL = os.getenv("FASTAPI_URL", "http://127.0.0.1:8000/api/v1")
+print("FASTAPI_URL =", FASTAPI_URL)
 
 
 @chat.route("/chat")
