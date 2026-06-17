@@ -21,6 +21,12 @@ def index():
     return redirect(url_for("chat.new_chat"))
 
 
+#temporary route to check deployment of fastapi
+@chat.route("/debug-fastapi")
+def debug_fastapi():
+    return {"FASTAPI_URL": FASTAPI_URL}
+
+
 @chat.route("/chat/new")
 @login_required
 def new_chat():
