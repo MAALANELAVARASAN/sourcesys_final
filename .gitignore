@@ -1,4 +1,11 @@
-.env
-venv/
 __pycache__/
+*.pyc
+*.pyo
+.env
 chroma_db/
+uploads/
+*.db
+.venv/
+poetry.lock
+.pytest_cache/
+ideas/

@@ -1,0 +1,64 @@
+services:
+  # ── FastAPI Backend ────────────────────────────────────
+  - type: web
+    name: tim-backend
+    runtime: python
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: NOMIC_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        value: ""
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tim-db
+          property: connectionString
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: CHROMA_DB_PATH
+        value: /tmp/chroma_db
+      - key: ENVIRONMENT
+        value: production
+
+  # ── Flask Client ───────────────────────────────────────
+  - type: web
+    name: tim-client
+    runtime: python
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn "client.app:create_app()" --bind 0.0.0.0:$PORT --workers 2
+    plan: free
+    envVars:
+      - key: FLASK_SECRET_KEY
+        sync: false
+      - key: CLIENT_DATABASE_URL
+        fromDatabase:
+          name: tim-client-db
+          property: connectionString
+      - key: BACKEND_URL
+        value: https://tim-backend.onrender.com  # update after backend deploys
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+
+# ── PostgreSQL Databases ───────────────────────────────
+databases:
+  - name: tim-db
+    plan: free
+    databaseName: tim_backend
+    user: tim_backend_user
+
+  - name: tim-client-db
+    plan: free
+    databaseName: tim_client
+    user: tim_client_user

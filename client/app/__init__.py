@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Allow HTTP for local dev (must be before any OAuth import)
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+if os.getenv("ENVIRONMENT") != "production":
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 login_manager = LoginManager()
 
