@@ -24,10 +24,11 @@ requests = "^2.34.2"
 langchain-nomic = "^1.0.1"
 python-multipart = "^0.0.29"
 langchain-chroma = "^1.1.0"
-langchain-google-genai = "^4.2.4"
+langchain-google-genai = "^4.2.5"
 langchain-groq = "^1.1.2"
 flask-dance = "^7.1.0"
 reportlab = "^4.5.1"
+google-generativeai = "^0.8.6"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
