@@ -5,10 +5,9 @@ from backend.core.config import settings
 
 embeddings = GoogleGenerativeAIEmbeddings(
     model="models/text-embedding-004",
-    google_api_key=settings.GEMINI_API_KEY
+    google_api_key=settings.GEMINI_API_KEY,
     client_options={"api_endpoint": "generativelanguage.googleapis.com"},
     transport="rest"
-
 )
 
 vectorstore = Chroma(
@@ -18,7 +17,6 @@ vectorstore = Chroma(
 
 
 def embed_document(text: str, doc_id: str) -> int:
-    # delete existing chunks for this doc first to avoid duplicates
     try:
         existing = vectorstore.get(where={"doc_id": {"$eq": doc_id}})
         if existing and existing["ids"]:
