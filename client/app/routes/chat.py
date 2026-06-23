@@ -53,6 +53,22 @@ def delete_chat(chat_id):
     db.session.commit()
     return jsonify({"ok": True})
 
+@chat.route("/api/proxy/translate", methods=["POST"])
+@login_required
+def proxy_translate():
+    data = request.get_json()
+    try:
+        response = requests.post(
+            f"{FASTAPI_URL}/faq/translate",
+            json=data,
+            timeout=30
+        )
+        return jsonify(response.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@chat.route("/chat/<int:chat_id>/rename", methods=["POST"])
 
 @chat.route("/chat/<int:chat_id>/rename", methods=["POST"])
 @login_required

@@ -259,7 +259,7 @@ async function generate() {
         }
     } catch(err) {
         document.getElementById(typingId).remove();
-        thread.innerHTML += '<div class="msg msg-assistant"><div class="msg-avatar">T</div><div class="msg-body"><div class="msg-error">Something went wrong. Try again.</div></div></div>';
+        thread.innerHTML += '<div class="msg msg-assistant"><div class="msg-avatar">T</div><div class="msg-body"><div class="msg-error">' + err.message + '</div></div></div>';
     } finally {
         document.getElementById("send-btn").disabled = false;
         document.getElementById("gen-btn").disabled  = false;
@@ -321,8 +321,8 @@ async function generateAll() {
             document.getElementById("prompt-input").value = "";
         }
     } catch(err) {
-        document.getElementById(typingId).remove();
-        thread.innerHTML += '<div class="msg msg-assistant"><div class="msg-avatar">T</div><div class="msg-body"><div class="msg-error">Something went wrong. Try again.</div></div></div>';
+    document.getElementById(typingId).remove();
+    thread.innerHTML += '<div class="msg msg-assistant"><div class="msg-avatar">T</div><div class="msg-body"><div class="msg-error">' + err.message + '</div></div></div>';
     } finally {
         document.getElementById("gen-btn").disabled     = false;
         document.getElementById("gen-all-btn").disabled = false;
@@ -341,7 +341,7 @@ async function generateAll() {
     async function translateLastResponse(lang) {
         if (!lastResponseData) return;
 
-        const res = await fetch("http://127.0.0.1:8000/api/v1/faq/translate", {
+        const res = await fetch("/api/proxy/translate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
