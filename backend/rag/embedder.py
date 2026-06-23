@@ -4,7 +4,7 @@ from langchain_chroma import Chroma
 from backend.core.config import settings
 
 embeddings = GoogleGenerativeAIEmbeddings(
-    model="models/embedding-001",
+    model="models/text-embedding-004",
     google_api_key=settings.GEMINI_API_KEY
 )
 
