@@ -1,11 +1,11 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_nomic.embeddings import NomicEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 from backend.core.config import settings
 
-embeddings = NomicEmbeddings(
-    model="nomic-embed-text-v1.5",
-    nomic_api_key=settings.NOMIC_API_KEY
+embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/embedding-001",
+    google_api_key=settings.GEMINI_API_KEY
 )
 
 vectorstore = Chroma(
